@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,20 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/signup-login', function () {
+    return view('signup-login');
+});
+
+
+Route::post('/signup-login', [UserController::class, 'process'])->name('signup-login');
+
+Route::view('signup-login', 'signup-login')->name('signup-login');
+
+Route::get('/home', function() {
+    return view('home');
+});
+
+Route::get('logout', [UserController::class, 'logout'])->name('logout');
+
+
