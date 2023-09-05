@@ -8,5 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pet extends Model
 {
+    public $timestamps = false;
     use HasFactory;
+
+    protected $fillable = [
+        'image',
+        'animal',
+        'breed',
+        'age'
+    ];
 }

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bootstrap Table with Add and Delete Row Feature</title>
+<title>Pets</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round|Open+Sans">
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -105,33 +105,56 @@ display: none;
 <div class="row">
 <div class="col-sm-8"><h2>Pets <b>Details</b></h2></div>
 <div class="col-sm-4">
-    <a href="{{ route('pet.create') }}"><button type="button" class="btn btn-info add-new"><i class="fa fa-plus"></i> Add New</button></a>
+    <a href="{{ route('pet.create') }}" class="btn btn-info add-new"><i class="fa fa-plus"></i> Add New</a>
 </div>
 </div>
-<table class="table table-bordered">
+<table class="table table-bordered text-center">
 <thead>
 <tr>
-<th>Image</th>
-<th>Animal</th>
-<th>Breed</th>
-<th>Age</th>
-<th>actions</th>
+<th class="text-center">Image</th>
+<th class="text-center">Animal</th>
+<th class="text-center">Breed</th>
+<th class="text-center">Age</th>
+<th class="text-center">actions</th>
 </tr>
 </thead>
 <tbody>
+    @foreach ($pets as $pet)
     <tr>
-        <td>John Doe</td>
-        <td>Administration</td>
-        <td>(171) 555-2222</td>
-        <td>20</td>
+        <td>
+            @if ($pet->image)
+            <img src="data:image/jpeg;base64,{{ base64_encode($pet->image) }}" alt="Pet Image" width="100" height="100">
+            @else
+            No Image Available
+            @endif
+        </td>
+        <td>{{$pet->animal}}</td>
+        <td>{{$pet->breed}}</td>
+        <td>{{$pet->age}}</td>
         <td>
             <a href="{{ route('pet.edit', $pet->id) }}" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-            <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
+            <br>
+            <br>
+            <form action="{{ route('pet.destroy', $pet->id) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger"><i class="material-icons">&#xE872;</i></button>
+            </form>
         </td>
-    </tr>    
+    </tr>
+    @endforeach
 </tbody>
 </table>
 </div>
 </div>
+@if ($errors->any())
+<div class="alert alert-danger">
+    <ul>
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
 </body>
-</html> 
+</html>

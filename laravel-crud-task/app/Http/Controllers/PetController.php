@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Pet;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PetController extends Controller
 {
@@ -14,7 +16,8 @@ class PetController extends Controller
      */
     public function index()
     {
-        return view('pet.index');
+        $pets = Pet::all();
+        return view('/pet.index', ['pets' => $pets]);
     }
 
     /**
@@ -24,7 +27,7 @@ class PetController extends Controller
      */
     public function create()
     {
-        //
+        return view('pet.create');
     }
 
     /**
@@ -35,7 +38,25 @@ class PetController extends Controller
      */
     public function store(Request $request)
     {
-        //
+    $request->validate([
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'animal' => 'required',
+        'breed' => 'required',
+        'age' => 'required',
+    ]);
+
+        // Handle image upload and conversion to BLOB
+        $image = $request->file('image');
+        $imageData = file_get_contents($image->getRealPath());
+
+        Pet::create([
+            'image' => $imageData,
+            'animal' => $request->input('animal'),
+            'breed' => $request->input('breed'),
+            'age' => $request->input('age'),
+        ]);
+
+        return redirect('/pet');
     }
 
     /**
@@ -55,9 +76,10 @@ class PetController extends Controller
      * @param  \App\Models\Pet  $pet
      * @return \Illuminate\Http\Response
      */
-    public function edit(Pet $pet)
+    public function edit($id)
     {
-        //
+        $pet = Pet::findOrFail($id);
+        return view('pet.edit', ['pet' => $pet]);
     }
 
     /**
@@ -67,10 +89,21 @@ class PetController extends Controller
      * @param  \App\Models\Pet  $pet
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Pet $pet)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'animal' => 'required',
+            'breed' => 'required',
+            'age' => 'required',
+        ]);
+
+        $pet = Pet::findOrFail($id);
+
+        $pet->update($request->all());
+
+        return redirect('/pet');
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -78,8 +111,10 @@ class PetController extends Controller
      * @param  \App\Models\Pet  $pet
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Pet $pet)
+    public function destroy($id)
     {
-        //
+        $pet = Pet::findOrFail($id);
+        $pet->delete();
+        return redirect('/pet');
     }
 }
